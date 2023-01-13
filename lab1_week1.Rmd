@@ -17,3 +17,38 @@ library(sf)
 library(tmap)
 ```
 
+### Read in the data
+shortcut to new chunk: command, option, I 
+read.csv <- built in function
+read_csv <- improved version in the tidyverse, has added functionality! Use read_csv ! 
+
+```{r}
+sf_trees <- read_csv(here('data', 'sf_trees', 'sf_trees.csv'))
+
+#look at lab key for metadata info
+
+#explore the data 
+
+top_5_status <- sf_trees %>% 
+  group_by(legal_status) %>%
+  summarize(tree_count = n()) %>%
+  slice_max(tree_count, n = 5) %>% #says find the max values for this variable and only keep X number (n = "")
+  arrange(-tree_count) #this makes it go in order from greatest to least 
+```
+
+#Explore the Data
+(in the console)
+
+- summary() :can be helpful to look at max/min long and lat -- can give you an idea if you geo data might be funky (i.e. trees in the pacific ocean)
+
+- sf_trees %>% group_by(legal_status) %>% summarize(tree_count = n())
+
+```{r}
+ggplot(data = top_5_status, aes(x = fct_reorder(legal_status, tree_count),
+                                y = tree_count)) +
+  geom_col() +
+  labs(y = "Tree count", x = "Legal Status") +
+  coord_flip() + #says swap my axes
+  theme_minimal()
+```
+
